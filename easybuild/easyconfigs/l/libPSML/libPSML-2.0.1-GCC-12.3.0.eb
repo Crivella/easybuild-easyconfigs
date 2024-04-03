@@ -1,0 +1,30 @@
+easyblock = 'CMakeMake'
+
+name = 'libPSML'
+version = '2.0.1'
+
+homepage = 'https://gitlab.com/siesta-project/libraries/libpsml'
+description = """A library to handle pseudopotentials in PSML format"""
+
+toolchain = {'name': 'GCC', 'version': '12.3.0'}
+
+source_urls = ['https://gitlab.com/siesta-project/libraries/libpsml/-/archive/%(version)s']
+sources = [SOURCELOWER_TAR_GZ]
+checksums = ['83cf75e6addc905a6b49c2e60b6a4a48c7a8e7510d5a81ad730368d953606ab9']
+
+dependencies = [
+    ('xmlf90', '1.6.3'),
+]
+
+builddependencies = [
+    ('CMake', '3.26.3'),
+]
+
+sanity_check_paths = {
+    'files': ['lib/libpsml.a'],
+    'dirs': ['include', 'lib/pkgconfig', 'lib/cmake/libpsml'],
+}
+
+runtest = 'test'
+
+moduleclass = 'data'

@@ -1,0 +1,88 @@
+easyblock = 'ConfigureMake'
+
+name = 'ABINIT'
+version = '9.10.5'
+
+homepage = 'https://www.abinit.org/'
+description = """
+ABINIT is a package whose main program allows one to find the total energy, charge density and electronic structure of
+systems made of electrons and nuclei (molecules and periodic solids) within Density Functional Theory (DFT), using
+pseudopotentials and a planewave or wavelet basis.
+"""
+
+toolchain = {'name': 'foss', 'version': '2023a'}
+toolchainopts = {'usempi': True, 'openmp': True, 'pic': True}
+
+source_urls = ['https://www.abinit.org/sites/default/files/packages/']
+sources = [SOURCELOWER_TAR_GZ]
+# checksums = ['']
+
+builddependencies = [
+    ('Python', '3.11.3'),
+    ('pkg-config', '0.29.2'),
+]
+dependencies = [
+    ('libxc', '6.2.2'),
+    ('netCDF', '4.9.2'),
+    ('netCDF-Fortran', '4.6.1'),
+    ('HDF5', '1.14.0'),
+    ('libxml2', '2.11.4'),
+    ('xmlf90', '1.6.3'),
+    ('libPSML', '2.0.1'),
+    ('Wannier90', '3.1.0'),
+]
+
+# Needed due to changes in GCC10.
+configopts = 'FCFLAGS="-fallow-argument-mismatch -ffree-line-length-none ${FCFLAGS}" '
+configopts += 'FFLAGS="-fallow-argument-mismatch ${FFLAGS}" '
+
+# Ensure MPI
+configopts += '--with-mpi="yes" '
+
+# Enable OpenMP
+configopts += '--enable-openmp="yes" '
+
+# BLAS/Lapack from FlexiBLAS
+configopts += 'LINALG_LIBS="${LIBLAPACK_MT}" '
+
+# FFTW
+configopts += '--with-fft-flavor=fftw3 FFTW3_LIBS="-L${EBROOTFFTW} -lfftw3f -lfftw3" '
+
+# libxc support
+configopts += '--with-libxc=${EBROOTLIBXC} '
+
+# hdf5/netcdf4 support
+configopts += '--with-netcdf="${EBROOTNETCDF}" '
+configopts += '--with-netcdf-fortran="${EBROOTNETCDFMINFORTRAN}" '
+configopts += '--with-hdf5="${EBROOTHDF5}" '
+
+# Wannier90
+configopts += '--with-wannier90="${EBROOTWANNIER90}" '
+preconfigopts = 'export WANNIER90_LIBS="-L${EBROOTWANNIER90}/lib -lwannier" && '
+
+# libxml2
+configopts += '--with-libxml2="${EBROOTLIBXML2}" '
+
+# xmlf90
+configopts += '--with-xmlf90="${EBROOTXMLF90}" '
+preconfigopts += 'export XMLF90_LIBS="-L${EBROOTXMLF90}/lib -lxmlf90" && '
+preconfigopts += 'export XMLF90_FCFLAGS="`pkg-config --cflags xmlf90`" && '
+
+# libPSML
+configopts += '--with-libpsml="${EBROOTLIBPSML}" '
+preconfigopts += 'export LIBPSML_LIBS="-L${EBROOTLIBPSML}/lib -lpsml" && '
+preconfigopts += 'export LIBPSML_FCFLAGS="`pkg-config --cflags libpsml`" && '
+
+# Enable double precision for GW calculations
+configopts += '--enable-gw-dpc '
+
+# 'make check' is just executing some basic unit tests.
+# Also running 'make tests_v1' to have some basic validation
+runtest = "check && make test_v1"
+
+sanity_check_paths = {
+    'files': ['bin/%s' % x for x in ['abinit', 'aim', 'cut3d', 'conducti', 'mrgddb', 'mrgscr', 'optic']],
+    'dirs': ['lib/pkgconfig'],
+}
+
+moduleclass = 'chem'
