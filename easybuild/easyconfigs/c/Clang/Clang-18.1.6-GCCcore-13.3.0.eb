@@ -26,6 +26,7 @@ builddependencies = [
     ('Perl', '5.38.2'),
     # Including Python bindings would require this as a runtime dep
     ('Python', '3.12.3'),
+    ('binutils', '2.42'),
 ]
 dependencies = [
     # since Clang is a compiler, binutils is a runtime dependency too
@@ -34,11 +35,7 @@ dependencies = [
     ('polly', '18.1.6'),
     ('lld', '18.1.6'),
     ('compiler-rt', '18.1.6'),
-    # ('libcxx', '18.1.6'),
-    # ('libcxxabi', '18.1.6'),
-    # ('libunwind', '18.1.6'),
 
-    ('binutils', '2.42'),
     ('hwloc', '2.10.0'),
     ('libxml2', '2.12.7'),
     ('ncurses', '6.5'),

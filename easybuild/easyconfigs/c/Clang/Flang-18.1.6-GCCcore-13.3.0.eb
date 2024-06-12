@@ -14,6 +14,8 @@ source_urls = ["https://github.com/llvm/llvm-project/releases/download/llvmorg-%
 sources = [
     # 'llvm-project-%(version)s.src.tar.xz',
     '%(name)s-%(version)s.src.tar.xz',
+    'llvm-%(version)s.src.tar.xz',  # Required for running tests
+    'mlir-%(version)s.src.tar.xz',  # Required for running tests
     'cmake-%(version)s.src.tar.xz',
 ]
 checksums = [
@@ -25,6 +27,8 @@ builddependencies = [
     ('Perl', '5.38.2'),
     # Including Python bindings would require this as a runtime dep
     ('Python', '3.12.3'),
+    ('binutils', '2.42'),
+    ('git', '2.45.1'),
 ]
 dependencies = [
     # since Clang is a compiler, binutils is a runtime dependency too
@@ -32,12 +36,11 @@ dependencies = [
     ('Clang', '18.1.6'),
     ('MLIR', '18.1.6'),
 
-    ('binutils', '2.42'),
-    ('hwloc', '2.10.0'),
+    # ('hwloc', '2.10.0'),
     ('libxml2', '2.12.7'),
     ('ncurses', '6.5'),
-    ('GMP', '6.3.0'),
-    ('Z3', '4.13.0'),
+    # ('GMP', '6.3.0'),
+    # ('Z3', '4.13.0'),
 ]
 
 # enabling RTTI makes the flang compiler need to link to libc++ so instead of
@@ -46,12 +49,50 @@ dependencies = [
 #   flang-new -flang-experimental-exec -fopenmp hello_openmp.f90 -l c++
 enable_rtti = False
 
-assertions = True
-python_bindings = False
-skip_all_tests = True
+# assertions = True
+# python_bindings = False
+# skip_all_tests = True
+assertions = False
+python_bindings = True
+skip_all_tests = False
 
-bootstrap = False
+test_suite_max_failed = 16
+#################################################################################################################################################################################################################################
+# Some porabibly fixable failures due to
+# ********************
+# FAIL: Flang :: Driver/no-duplicate-main.f90 (15 of 2403)
+# ******************** TEST 'Flang :: Driver/no-duplicate-main.f90' FAILED ********************
+# Exit Code: 1
+# Command Output (stdout):
+# --
+# ld.lld: error: cannot open /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/lib/clang/18/lib/linux/libclang_rt.builtins-x86_64.a: No such file or directory
+# ld.lld: error: cannot open /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/lib/clang/18/lib/linux/libclang_rt.builtins-x86_64.a: No such file or directory
+# flang-new: error: linker command failed with exit code 1 (use -v to see invocation)
+# ld.lld: error: cannot open /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/lib/clang/18/lib/linux/libclang_rt.builtins-x86_64.a: No such file or directory
+# ld.lld: error: cannot open /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/lib/clang/18/lib/linux/libclang_rt.builtins-x86_64.a: No such file or directory
+# flang-new: error: linker command failed with exit code 1 (use -v to see invocation)
 
-configopts = '-DFLANG_INCLUDE_TESTS=OFF'
+# --
+# Command Output (stderr):
+# --
+# RUN: at line 3: /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/bin/flang-new -x ir -o /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/test/Driver/Output/no-duplicate-main.f90.tmp.c-object -c
+#  /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/flang/test/Driver/Inputs/no_duplicate_main.ll
+# + /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/bin/flang-new -x ir -o /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/test/Driver/Output/no-duplicate-main.f90.tmp.c-object -c /home/crivell
+# a/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/flang/test/Driver/Inputs/no_duplicate_main.ll
+# warning: overriding the module target triple with x86_64-unknown-linux-gnu [-Woverride-module]
+# RUN: at line 4: /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/bin/flang-new -o /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/test/Driver/Output/no-duplicate-main.f90.tmp -c /home/crivella
+# /.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/flang/test/Driver/no-duplicate-main.f90
+# + /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/bin/flang-new -o /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/test/Driver/Output/no-duplicate-main.f90.tmp -c /home/crivella/.local/easybu
+# ild/build/Flang/18.1.6/GCCcore-13.3.0/flang/test/Driver/no-duplicate-main.f90
+# RUN: at line 5: not /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/bin/flang-new -o /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/test/Driver/Output/no-duplicate-main.f90.tmp.exe /home/cri
+# vella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/test/Driver/Output/no-duplicate-main.f90.tmp /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/test/Driver/Output/no-duplicate-main.f90.tmp.c-object 2>&1
+# + not /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/bin/flang-new -o /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/test/Driver/Output/no-duplicate-main.f90.tmp.exe /home/crivella/.local/e
+# asybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/test/Driver/Output/no-duplicate-main.f90.tmp /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/test/Driver/Output/no-duplicate-main.f90.tmp.c-object
+# RUN: at line 7: /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/bin/flang-new -fno-fortran-main -o /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/test/Driver/Output/no-duplicate-main.f90.tmp
+# .exe /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/test/Driver/Output/no-duplicate-main.f90.tmp /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/test/Driver/Output/no-duplicate-main.f90.tmp.
+# c-object 2>&1
+# + /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/bin/flang-new -fno-fortran-main -o /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/test/Driver/Output/no-duplicate-main.f90.tmp.exe /home/cri
+# vella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/test/Driver/Output/no-duplicate-main.f90.tmp /home/crivella/.local/easybuild/build/Flang/18.1.6/GCCcore-13.3.0/llvm.obj.1/test/Driver/Output/no-duplicate-main.f90.tmp.c-object
+#################################################################################################################################################################################################################################
 
 moduleclass = 'compiler'

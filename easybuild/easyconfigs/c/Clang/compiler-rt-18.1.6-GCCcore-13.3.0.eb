@@ -14,7 +14,7 @@ source_urls = ["https://github.com/llvm/llvm-project/releases/download/llvmorg-%
 sources = [
     '%(name)s-%(version)s.src.tar.xz',
     'third-party-%(version)s.src.tar.xz',
-    # 'llvm-%(version)s.src.tar.xz', # Needed for tests with llvm-lit
+    'llvm-%(version)s.src.tar.xz',  # Needed for tests with llvm-lit
     'cmake-%(version)s.src.tar.xz',
 ]
 checksums = [
