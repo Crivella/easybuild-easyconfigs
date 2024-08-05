@@ -1,0 +1,35 @@
+easyblock = 'ConfigureMake'
+
+name = 'FermiSurfer'
+version = '2.4.0'
+
+homepage = 'https://mitsuaki1987.github.io/fermisurfer/'
+description = """FermiSurfer is an visualization tool for Fermi surfaces.
+This application displays Fermi surfaces colored as a function of an arbitrary
+scalar quantities such as magnitude of Fermi velocities and superconducting gap.
+"""
+
+toolchain = {'name': 'GCC', 'version': '12.3.0'}
+toolchainopts = {'pic': True}
+
+source_urls = ['https://github.com/mitsuaki1987/fermisurfer/archive/refs/tags/']
+sources = ['%(version)s.tar.gz']
+checksums = ['41180a7c0314b23af6c237e6779c8850140f8edc745c8940587884a1bac6850e']
+
+builddependencies = [
+    ('binutils', '2.40'),
+]
+
+dependencies = [
+    # ('freeglut', '3.4.0'),
+    ('wxWidgets', '3.2.2.1', '-x11'),
+]
+
+# configopts = '--with-wx-prefix=$EBROOTWXWIDGETS '
+
+sanity_check_paths = {
+    'files': ['bin/fermisurfer'],
+    'dirs': [],
+}
+
+moduleclass = 'chem'
