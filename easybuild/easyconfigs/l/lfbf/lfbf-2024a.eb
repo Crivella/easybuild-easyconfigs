@@ -1,0 +1,20 @@
+easyblock = 'Toolchain'
+
+name = 'lfbf'
+version = '2024a'
+
+homepage = '(none)'
+description = """GNU Compiler Collection (GCC) based compiler toolchain, including
+ FlexiBLAS (BLAS and LAPACK support) and (serial) FFTW."""
+
+toolchain = SYSTEM
+
+local_llvmver = '19.1.1'
+
+dependencies = [
+    ('LLVM', local_llvmver),
+    ('FlexiBLAS', '3.4.4', '', ('LLVM', local_llvmver)),
+    ('FFTW', '3.3.10', '', ('LLVM', local_llvmver)),
+]
+
+moduleclass = 'toolchain'
