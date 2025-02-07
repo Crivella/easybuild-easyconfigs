@@ -13,8 +13,8 @@ local_llvmver = '19.1.1'
 
 dependencies = [
     ('LLVM', local_llvmver),
-    ('FlexiBLAS', '3.4.4', '', ('LLVM', local_llvmver)),
-    ('FFTW', '3.3.10', '', ('LLVM', local_llvmver)),
+    ('FlexiBLAS', '3.4.4', '', ('LLVMtc', local_llvmver)),
+    ('FFTW', '3.3.10', '', ('LLVMtc', local_llvmver)),
 ]
 
 moduleclass = 'toolchain'
