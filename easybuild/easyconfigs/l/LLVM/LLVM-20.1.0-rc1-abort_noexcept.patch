@@ -1,0 +1,17 @@
+Needed to avoid a error: '__libcpp_verbose_abort' is missing exception specification 'noexcept' error when compiling
+flang/runtime/io-api-minimal.cpp
+Related to https://github.com/llvm/llvm-project/issues/113059
+
+diff --git a/flang/runtime/io-api-minimal.cpp b/flang/runtime/io-api-minimal.cpp
+index 68768427be0c..970c7d81a4d7 100644
+--- a/flang/runtime/io-api-minimal.cpp
++++ b/flang/runtime/io-api-minimal.cpp
+@@ -150,7 +150,7 @@ bool IODEF(OutputLogical)(Cookie cookie, bool truth) {
+ // Provide own definition for `std::__libcpp_verbose_abort` to avoid dependency
+ // on the version provided by libc++.
+ 
+-void std::__libcpp_verbose_abort(char const *format, ...) {
++void std::__libcpp_verbose_abort(char const *format, ...) noexcept {
+   va_list list;
+   va_start(list, format);
+   std::vfprintf(stderr, format, list);
