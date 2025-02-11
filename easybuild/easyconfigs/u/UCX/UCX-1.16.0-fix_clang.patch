@@ -1,0 +1,149 @@
+Patch related to https://github.com/openucx/ucx/issues/8898
+Exported from https://github.com/openucx/ucx/pull/9667/files
+This will/should not be needed for version >= 1.17.0
+
+From 98496827bef6f4619a4a8058443f61ef78b8ab72 Mon Sep 17 00:00:00 2001
+From: Roie Danino <rdanino@nvidia.com>
+Date: Wed, 7 Feb 2024 14:23:45 +0200
+Subject: [PATCH] UCM/PTMALLOC286: added UCS_V_UNUSED attribute to nfences
+ which might be unused in release
+
+---
+ src/ucm/ptmalloc286/malloc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/ucm/ptmalloc286/malloc.c b/src/ucm/ptmalloc286/malloc.c
+index e17799678..45c1aaf8f 100644
+--- a/src/ucm/ptmalloc286/malloc.c
++++ b/src/ucm/ptmalloc286/malloc.c
+@@ -526,6 +526,7 @@ MAX_RELEASE_CHECK_RATE   default: 4095 unless not HAVE_MMAP
+ #endif
+ 
+ #include <ucs/sys/preprocessor.h>
++#include <ucs/sys/compiler_def.h>
+ 
+ /* Version identifier to allow people to support multiple versions */
+ #ifndef DLMALLOC_VERSION
+@@ -3997,7 +3998,7 @@ static void add_segment(mstate m, char* tbase, size_t tsize, flag_t mmapped) {
+   msegmentptr ss = (msegmentptr)(chunk2mem(sp));
+   mchunkptr tnext = chunk_plus_offset(sp, ssize);
+   mchunkptr p = tnext;
+-  int nfences = 0;
++  int UCS_V_UNUSED nfences = 0;
+ 
+   /* reset top to new space */
+   init_top(m, (mchunkptr)tbase, tsize - TOP_FOOT_SIZE);
+-- 
+
+
+
+
+
+--- a/test/apps/iodemo/Makefile.in	2025-02-05 13:24:02.673123786 +0100
++++ b/test/apps/iodemo/Makefile.in	2025-02-05 13:24:43.139246268 +0100
+@@ -473,7 +473,7 @@
+ @IODEMO_CUDA_FALSE@io_demo_CUDA_CPPFLAGS = 
+ @IODEMO_CUDA_TRUE@io_demo_CUDA_CPPFLAGS = $(CUDA_CPPFLAGS) -DHAVE_CUDA
+ io_demo_CXXFLAGS = \
+-	$(BASE_CXXFLAGS)
++	$(BASE_CXXFLAGS) $(CXX11FLAGS)
+ 
+ io_demo_CPPFLAGS = $(BASE_CPPFLAGS) $(io_demo_CUDA_CPPFLAGS)
+ io_demo_LDADD = \
+
+
+
+
+TOBECHECKED!!!!!!!!
+Might be curing the symptom and not the problem, for some reason clang++ automatically also have the <math> log
+function available and it uses that definition instead of the log class in sa_util.h
+
+diff --git a/test/apps/sockaddr/sa_main.cc b/test/apps/sockaddr/sa_main.cc
+index 8da0cdf29..855c4595d 100644
+--- a/test/apps/sockaddr/sa_main.cc
++++ b/test/apps/sockaddr/sa_main.cc
+@@ -136,7 +136,7 @@ application::application(int argc, char **argv) : m_num_conns_inflight(0),
+             m_params.response_size = atoi(optarg);
+             break;
+         case 'v':
+-            log::more_verbose();
++            log__::more_verbose();
+             break;
+         default:
+             throw usage_exception();
+diff --git a/test/apps/sockaddr/sa_util.cc b/test/apps/sockaddr/sa_util.cc
+index a494076fc..460aa2bb7 100644
+--- a/test/apps/sockaddr/sa_util.cc
++++ b/test/apps/sockaddr/sa_util.cc
+@@ -84,9 +84,9 @@ int evpoll_set::create_epfd() {
+     return fd;
+ }
+ 
+-log::level_t log::m_log_level = INFO;
++log__::level_t log__::m_log_level = INFO;
+ 
+-log::log(log::level_t level, const std::string& file, int line) :
++log__::log__(log__::level_t level, const std::string& file, int line) :
+             m_enabled(level <= m_log_level) {
+     if (m_enabled) {
+         struct timeval tv;
+@@ -99,14 +99,14 @@ log::log(log::level_t level, const std::string& file, int line) :
+     }
+ }
+ 
+-log::~log() {
++log__::~log__() {
+     if (m_enabled) {
+         m_msg << std::endl;
+         std::cout << m_msg.str() << std::flush;
+     }
+ }
+ 
+-std::string log::level_str(log::level_t level) {
++std::string log__::level_str(log__::level_t level) {
+     switch (level) {
+     case INFO:
+         return "INFO ";
+@@ -117,7 +117,7 @@ std::string log::level_str(log::level_t level) {
+     }
+ }
+ 
+-void log::more_verbose() {
++void log__::more_verbose() {
+     if (m_log_level == INFO) {
+         m_log_level = DEBUG;
+     }
+diff --git a/test/apps/sockaddr/sa_util.h b/test/apps/sockaddr/sa_util.h
+index c77ccc9a8..e7fedcaca 100644
+--- a/test/apps/sockaddr/sa_util.h
++++ b/test/apps/sockaddr/sa_util.h
+@@ -74,23 +74,23 @@ private:
+ };
+ 
+ #define LOG_INFO \
+-    log(log::INFO, __FILE__, __LINE__)
++    log__(log__::INFO, __FILE__, __LINE__)
+ #define LOG_DEBUG \
+-    log(log::DEBUG, __FILE__, __LINE__)
++    log__(log__::DEBUG, __FILE__, __LINE__)
+ 
+ /* logger */
+-class log {
++class log__ {
+ public:
+     typedef enum {
+         INFO,
+         DEBUG
+     } level_t;
+ 
+-    log(level_t level, const std::string& file, int line);
+-    ~log();
++    log__(level_t level, const std::string& file, int line);
++    ~log__();
+ 
+     template <typename T>
+-    log& operator<<(const T& value) {
++    log__& operator<<(const T& value) {
+         m_msg << value;
+         return *this;
+     }
