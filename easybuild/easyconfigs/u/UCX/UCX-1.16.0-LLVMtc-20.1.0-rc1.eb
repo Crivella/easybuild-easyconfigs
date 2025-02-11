@@ -1,0 +1,65 @@
+easyblock = 'ConfigureMake'
+
+name = 'UCX'
+version = '1.16.0'
+
+homepage = 'https://www.openucx.org/'
+description = """Unified Communication X
+An open-source production grade communication framework for data centric
+and high-performance applications
+"""
+
+toolchain = {'name': 'LLVMtc', 'version': '20.1.0-rc1'}
+toolchainopts = {
+    'pic': True,
+    'extra_cxxflags': '-std=c++11'
+}
+
+source_urls = ['https://github.com/openucx/ucx/releases/download/v%(version)s']
+sources = ['%(namelower)s-%(version)s.tar.gz']
+patches = [
+    'UCX-1.13.1-dynamic_modules.patch',
+    # required for std::random_shuffle deprecated in C++14, removed in C++17
+    # https://stackoverflow.com/questions/45013977/random-shuffle-is-not-a-member-of-std-error
+    # + other fix TOBECHECKED if it is needed or a problem with LLVM config (Might be curing the symptom and not the problem)
+    # For some reason clang++ automatically also have the <math> log function definition
+    # which takes precedence over the log class in sa_util.h leading to an error on the function signature
+    'UCX-1.16.0-fix_clang.patch',
+]
+checksums = [
+    {'ucx-1.16.0.tar.gz': 'f73770d3b583c91aba5fb07557e655ead0786e057018bfe42f0ebe8716e9d28c'},
+    {'UCX-1.13.1-dynamic_modules.patch': '00874687bd90b795fff61aaa183f6c6bea2210aa1003b28f23d9ebf7066f8782'},
+]
+
+builddependencies = [
+    ('binutils', '2.42'),
+    ('Autotools', '20231222'),
+    ('pkgconf', '2.2.0'),
+]
+
+osdependencies = [OS_PKG_IBVERBS_DEV]
+
+dependencies = [
+    ('zlib', '1.3.1'),
+    ('numactl', '2.0.18'),
+]
+
+configopts = '--enable-optimizations --enable-cma --enable-mt --with-verbs '
+configopts += '--without-java --without-go --disable-doxygen-doc '
+# include the configure options from contrib/configure-release
+configopts += '--disable-logging --disable-debug --disable-assertions --disable-params-check '
+
+# The makefile chain is not passing CXXFLAGS explicitly to the subdirectories
+# In particular test/apps/iodemo requires -std=c++11 which is passed through CPPFLAGS
+# preconfigopts='export CFLAGS && echo "CFLAGS: ${CFLAGS}" && export CXXFLAGS && echo "CXXFLAGS: ${CXXFLAGS}" &&'
+# preconfigopts='export CFLAGS && echo "CFLAGS: ${CFLAGS}" && export CXXFLAGS && echo "CXXFLAGS: ${CXXFLAGS}" && export CC && echo "CC: ${CC}" && export CXX && echo "CXX: ${CXX}" && '
+buildopts = 'V=1'
+
+sanity_check_paths = {
+    'files': ['bin/ucx_info', 'bin/ucx_perftest', 'bin/ucx_read_profile'],
+    'dirs': ['include', 'lib', 'share']
+}
+
+sanity_check_commands = ["ucx_info -d"]
+
+moduleclass = 'lib'
