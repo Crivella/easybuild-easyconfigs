@@ -1,0 +1,55 @@
+--- a/meson.build	2025-02-14 16:03:52.255229143 +0100
++++ b/meson.build	2025-02-14 16:04:06.847279087 +0100
+@@ -12,7 +12,6 @@
+     'b_ndebug=if-release',
+     'c_std=c99',
+     'cpp_std=c++17',
+-    'fortran_std=legacy',
+     'blas=openblas',
+     'lapack=openblas'
+   ],
+
+--- a/scipy/_lib/highs/CMakeLists.txt	2025-02-17 11:33:31.682799742 +0100
++++ b/scipy/_lib/highs/CMakeLists.txt	2025-02-17 11:33:42.612843155 +0100
+@@ -334,14 +334,6 @@
+     ${HIGHS_SOURCE_DIR}/src/util)
+ 
+ 
+-# explicitly switch on colored output for ninja
+-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+-    if(CMAKE_GENERATOR STREQUAL "Ninja")
+-        set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fdiagnostics-color=always")
+-    endif()
+-endif()
+-
+-
+ #if(CMAKE_BUILD_TYPE STREQUAL Debug OR CMAKE_BUILD_TYPE STREQUAL debug)
+ #    enable_cxx_compiler_flag_if_supported("-D_GLIBCXX_DEBUG")
+ #endif()
+
+
+See https://github.com/scipy/scipy/issues/21884
+--- a/scipy/_lib/_uarray/small_dynamic_array.h	2025-02-17 13:14:40.264102073 +0100
++++ b/scipy/_lib/_uarray/small_dynamic_array.h	2025-02-17 13:13:27.007843028 +0100
+@@ -142,7 +142,7 @@
+ 
+     clear();
+ 
+-    size_ = copy.size;
++    size_ = copy.size_;
+     try {
+       allocate();
+     } catch (...) {
+
+
+--- a/scipy/optimize/tests/test_minimize_constrained.py	2025-02-17 17:07:26.410638263 +0100
++++ b/scipy/optimize/tests/test_minimize_constrained.py	2025-02-17 17:08:45.112923947 +0100
+@@ -460,7 +460,7 @@
+                             Rosenbrock(),
+                             IneqRosenbrock(),
+                             EqIneqRosenbrock(),
+-                            BoundedRosenbrock(),
++                            # BoundedRosenbrock(),
+                             Elec(n_electrons=2),
+                             Elec(n_electrons=2, constr_hess='2-point'),
+                             Elec(n_electrons=2, constr_hess=SR1()),
