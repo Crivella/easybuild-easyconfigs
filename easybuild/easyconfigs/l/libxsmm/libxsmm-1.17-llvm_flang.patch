@@ -1,0 +1,23 @@
+Remove fortran flags not supported by flang-new
+--- a/Makefile.inc	2025-02-18 13:36:51.838479907 +0100
++++ b/Makefile.inc	2025-02-18 13:36:37.298423813 +0100
+@@ -1904,7 +1904,6 @@
+     ifeq (,$(filter-out 0,$(PGI) $(INTEL) $(ICX)))
+       CXXFLAGS += -ftree-vectorize
+       CFLAGS += -ftree-vectorize
+-      FCFLAGS += -ftree-vectorize
+     endif
+   endif
+   endif
+@@ -1948,11 +1947,6 @@
+     ifneq (0,$(OPT))
+       CXXFLAGS += -fdata-sections -ffunction-sections
+       CFLAGS += -fdata-sections -ffunction-sections
+-      ifeq (,$(filter-out 0,$(INTEL) $(ICX)))
+-        FCFLAGS += -fdata-sections -ffunction-sections
+-      else ifneq (,$(strip $(GFC)))
+-        FCFLAGS += -fdata-sections -ffunction-sections
+-      endif
+       # --gc-sections: relies on section-flags present at compile-stage
+       LDFLAGS := $(call linkopt,--gc-sections) $(LDFLAGS)
+       ifeq (0,$(VISIBILITY)) # -fvisibility=hidden may cause crashes

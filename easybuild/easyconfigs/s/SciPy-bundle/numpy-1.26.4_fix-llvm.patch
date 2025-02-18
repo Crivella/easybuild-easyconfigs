@@ -1,0 +1,26 @@
+TEMPORARY FIX: For some reason cc.has_type is failing with llvm so we just remove it.
+Should probably investigate more why it is failing but need to dig in how Meson works
+and find the logs for the checks.
+The weird thing is that sizeof is succeeding so are `has_type` and `sizeof` using different
+invocations of the compiler? Maybe how `prefix` is being handled?
+--- a/numpy/core/meson.build	2025-02-13 16:20:47.272443082 +0100
++++ b/numpy/core/meson.build	2025-02-13 16:22:03.332772903 +0100
+@@ -136,13 +136,11 @@
+     ]
+   endif
+   foreach symbol_type: complex_types_to_check
+-    if cc.has_type(symbol_type[2], prefix: '#include <complex.h>')
+-      cdata.set10(symbol_type[0], true)
+-      # Determine size of NumPy's own, struct-based, complex types. Binary
+-      # compatibility with C99 complex types is checked at build time in `npy_common.h`.
+-      ftype = symbol_type[3]
+-      cdata.set(symbol_type[1], cc.sizeof(f'struct {@ftype@ __x; @ftype@ __y;}'))
+-    endif
++    cdata.set10(symbol_type[0], true)
++    # Determine size of NumPy's own, struct-based, complex types. Binary
++    # compatibility with C99 complex types is checked at build time in `npy_common.h`.
++    ftype = symbol_type[3]
++    cdata.set(symbol_type[1], cc.sizeof(f'struct {@ftype@ __x; @ftype@ __y;}'))
+   endforeach
+ endif
+ 

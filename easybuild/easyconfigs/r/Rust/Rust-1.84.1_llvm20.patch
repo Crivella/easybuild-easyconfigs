@@ -1,0 +1,42 @@
+Changed return type of renameModuleForThinLTO in LLVM 20
+diff --git a/compiler/rustc_llvm/llvm-wrapper/PassWrapper.cpp b/compiler/rustc_llvm/llvm-wrapper/PassWrapper.cpp
+index 489c911d7ee..d01f4cdcfb4 100644
+--- a/compiler/rustc_llvm/llvm-wrapper/PassWrapper.cpp
++++ b/compiler/rustc_llvm/llvm-wrapper/PassWrapper.cpp
+@@ -1380,12 +1380,8 @@ extern "C" bool LLVMRustPrepareThinLTORename(const LLVMRustThinLTOData *Data,
+   TargetMachine &Target = *unwrap(TM);
+ 
+   bool ClearDSOLocal = clearDSOLocalOnDeclarations(Mod, Target);
+-  bool error = renameModuleForThinLTO(Mod, Data->Index, ClearDSOLocal);
++  renameModuleForThinLTO(Mod, Data->Index, ClearDSOLocal);
+ 
+-  if (error) {
+-    LLVMRustSetLastError("renameModuleForThinLTO failed");
+-    return false;
+-  }
+   return true;
+ }
+ 
+Changed definition of getFileLineInfoForAddress in LLVM 20
+--- a/src/llvm-project/lld/Common/DWARF.cpp	2025-02-13 11:45:03.708976812 +0100
++++ b/src/llvm-project/lld/Common/DWARF.cpp	2025-02-13 11:44:35.062903039 +0100
+@@ -93,7 +93,7 @@
+   DILineInfo info;
+   for (const llvm::DWARFDebugLine::LineTable *lt : lineTables) {
+     if (lt->getFileLineInfoForAddress(
+-            {offset, sectionIndex}, nullptr,
++            {offset, sectionIndex}, false, nullptr,
+             DILineInfoSpecifier::FileLineInfoKind::AbsoluteFilePath, info))
+       return info;
+   }
+
+--- a/src/llvm-project/lld/COFF/LTO.cpp	2025-02-13 12:09:23.980137268 +0100
++++ b/src/llvm-project/lld/COFF/LTO.cpp	2025-02-13 12:09:44.315197381 +0100
+@@ -118,6 +118,7 @@
+   if (ctx.config.thinLTOIndexOnly) {
+     auto OnIndexWrite = [&](StringRef S) { thinIndices.erase(S); };
+     backend = lto::createWriteIndexesThinBackend(
++        llvm::hardware_concurrency(ctx.config.thinLTOJobs),
+         std::string(ctx.config.thinLTOPrefixReplaceOld),
+         std::string(ctx.config.thinLTOPrefixReplaceNew),
+         std::string(ctx.config.thinLTOPrefixReplaceNativeObject),
