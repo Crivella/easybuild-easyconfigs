@@ -133,10 +133,14 @@ build_shared_libs = False
 with_scalapack = True
 with_fox = True
 with_gipaw = True
-with_d3q = True
+# with_d3q = True
+with_d3q = False  # Test out rest of code gives a problem with LLVM flang-new
 with_qmcpack = False  # Needs HDF5
 
+# buildopts= "pw"  # try building PW only first
+
 moduleclass = "chem"
+
 
 test_suite_threshold = (
     0.98

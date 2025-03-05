@@ -2,7 +2,7 @@
 # Author:    Robert Mijakovic <robert.mijakovic@lxp.lu>
 ##
 name = 'CP2K'
-version = '2023.1'
+version = '2025.1'
 
 homepage = 'https://www.cp2k.org/'
 description = """CP2K is a freely available (GPL) program, written in Fortran 95, to perform atomistic and molecular
@@ -16,11 +16,11 @@ toolchainopts = {'pic': True, 'openmp': True}
 source_urls = ['https://github.com/cp2k/cp2k/releases/download/v%(version)s/']
 sources = [SOURCELOWER_TAR_BZ2]
 patches = [
-    'CP2K-2023.1-llvm_patch.patch',
+    'CP2K-2025.1-llvm_patch.patch',
 ]
 checksums = [
-    'dff343b4a80c3a79363b805429bdb3320d3e1db48e0ff7d20a3dfd1c946a51ce',
-    None
+    # 'dff343b4a80c3a79363b805429bdb3320d3e1db48e0ff7d20a3dfd1c946a51ce',
+    # None
 ]
 
 builddependencies = [
@@ -33,14 +33,9 @@ dependencies = [
     # ('libxc', '6.2.2'),
     ('libvori', '220621'),
     ('FFTW', '3.3.10'),
-    ('PLUMED', '2.9.3'),
+    ('libxsmm', '1.17'),
+    # ('PLUMED', '2.9.3'),
 ]
-if ARCH == 'x86_64':
-    # LIBXSMM is not supported supported on ARM with GCC 12.2.0 and 12.3.0
-    # see https://www.cp2k.org/dev:compiler_support
-    dependencies += [
-        ('libxsmm', '1.17'),
-    ]
 
 type = 'psmp'
 
