@@ -14,7 +14,7 @@ local_llvmver = '19.1.1'
 # compiler toolchain dependencies
 dependencies = [
     ('LLVMtc', local_llvmver),  # includes both GCC and binutils
-    ('OpenMPI', '5.0.3', '', ('LLVMtc', local_llvmver)),
+    ('OpenMPI', '5.0.7', '', ('LLVMtc', local_llvmver)),
 ]
 
 moduleclass = 'toolchain'

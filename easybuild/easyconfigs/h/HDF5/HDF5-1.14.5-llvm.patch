@@ -1,0 +1,11 @@
+--- configure.orig	2025-02-06 13:01:38.555210795 +0100
++++ configure	2025-02-06 13:01:51.152271297 +0100
+@@ -34394,7 +34394,7 @@
+   done
+ fi
+ if test -n "$cxx_version_info"; then
+-  CXX_VERSION="$CXX_VERSION ( $cxx_version_info)"
++  CXX_VERSION="$CXX_VERSION"
+ fi
+ 
+ 

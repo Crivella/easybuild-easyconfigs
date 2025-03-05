@@ -1,0 +1,108 @@
+--- a/src/xc/xc_functionals_utilities.F	2025-02-19 14:49:46.432839337 +0100
++++ b/src/xc/xc_functionals_utilities.F	2025-02-19 14:49:55.303905094 +0100
+@@ -241,7 +241,7 @@
+       IF (SIZE(fx, 2) < m) CPABORT("SIZE(fx,2) too small")
+ !!    END IF
+ 
+-!$OMP PARALLEL DO PRIVATE(ip,x,rhoab) DEFAULT(NONE) SHARED(fx,m,eps_rho,n)
++!$OMP PARALLEL DO PRIVATE(ip,x,rhoab) DEFAULT(NONE) SHARED(fx,m,eps_rho,n,rhoa,rhob)
+       DO ip = 1, n
+          rhoab = rhoa(ip) + rhob(ip)
+          IF (rhoab < eps_rho) THEN
+
+
+--- a/src/xc/xc_pade.F	2025-02-19 15:41:00.291402109 +0100
++++ b/src/xc/xc_pade.F	2025-02-19 15:40:54.492382315 +0100
+@@ -378,7 +378,7 @@
+       REAL(KIND=dp)                                      :: depade, dpv, dq, epade, p, q
+ 
+ !$OMP PARALLEL DO PRIVATE(ip,p,q,epade,dpv,dq,depade) DEFAULT(NONE)&
+-!$OMP SHARED(n,rho,eps_rho,pot0,pot1)
++!$OMP SHARED(n,rho,eps_rho,pot0,pot1,rs)
+ 
+       DO ip = 1, n
+          IF (rho(ip) > eps_rho) THEN
+@@ -416,7 +416,7 @@
+       REAL(KIND=dp)                                      :: d2p, d2q, dpv, dq, p, q, rsr, t1, t2, t3
+ 
+ !$OMP PARALLEL DO PRIVATE(ip,p,q,dpv,dq,d2p,d2q,rsr,t1,t2,t3) DEFAULT(NONE)&
+-!$OMP SHARED(n,rho,eps_rho,rs)
++!$OMP SHARED(n,rho,eps_rho,rs,pot)
+ 
+       DO ip = 1, n
+          IF (rho(ip) > eps_rho) THEN
+
+
+--- a/src/xc/xc_tfw.F	2025-02-19 15:56:37.063631695 +0100
++++ b/src/xc/xc_tfw.F	2025-02-19 15:59:16.790413523 +0100
+@@ -432,7 +432,7 @@
+       f = f23*f53*flda
+ 
+ !$OMP PARALLEL DO PRIVATE(ip) DEFAULT(NONE)&
+-!$OMP SHARED(npoints,rho,eps_rho,e_rho_rho,e_rho_ndrho,e_ndrho_ndrho,grho,f,fvw)
++!$OMP SHARED(npoints,rho,eps_rho,e_rho_rho,e_rho_ndrho,e_ndrho_ndrho,grho,f,fvw,r13)
+       DO ip = 1, npoints
+ 
+          IF (rho(ip) > eps_rho) THEN
+@@ -472,7 +472,7 @@
+       f = -f13*f23*f53*flda
+ 
+ !$OMP PARALLEL DO PRIVATE(ip) DEFAULT(NONE)&
+-!$OMP SHARED(npoints,rho,eps_rho,e_rho_rho_rho,r13,s,e_rho_rho_ndrho,e_rho_ndrho_ndrho,f,fvw)
++!$OMP SHARED(npoints,rho,eps_rho,e_rho_rho_rho,r13,s,e_rho_rho_ndrho,e_rho_ndrho_ndrho,f,fvw,s)
+       DO ip = 1, npoints
+ 
+          IF (rho(ip) > eps_rho) THEN
+@@ -575,7 +575,7 @@
+       f = f23*f53*flsd
+ 
+ !$OMP PARALLEL DO PRIVATE(ip) DEFAULT(NONE)&
+-!$OMP SHARED(npoints,rhoa,eps_rho,e_rho_rho,f,fvw,r13a,sa,e_rho_ndrho,e_ndrho_ndrho)
++!$OMP SHARED(npoints,rhoa,eps_rho,e_rho_rho,f,fvw,r13a,sa,e_rho_ndrho,e_ndrho_ndrho,grhoa)
+       DO ip = 1, npoints
+ 
+          IF (rhoa(ip) > eps_rho) THEN
+@@ -615,7 +615,7 @@
+       f = -f13*f23*f53*flsd
+ 
+ !$OMP PARALLEL DO PRIVATE(ip) DEFAULT(NONE)&
+-!$OMP SHARED(npoints,rhoa,eps_rho,e_rho_rho_rho,e_rho_rho_ndrho,e_rho_ndrho_ndrho,f,fvw,sa,grhoa)
++!$OMP SHARED(npoints,rhoa,eps_rho,e_rho_rho_rho,e_rho_rho_ndrho,e_rho_ndrho_ndrho,f,fvw,sa,grhoa,r13a)
+       DO ip = 1, npoints
+ 
+          IF (rhoa(ip) > eps_rho) THEN
+
+          
+--- a/src/xc/xc_perdew86.F	2025-02-19 16:07:48.225152519 +0100
++++ b/src/xc/xc_perdew86.F	2025-02-19 16:08:20.173302333 +0100
+@@ -384,7 +384,7 @@
+ !$OMP PARALLEL DO PRIVATE(ip,x, r, cr, phi, ep, g, or, p, q, dpv, dq, dphir, dcr, dphig) &
+ !$OMP             PRIVATE(dphigr, d2phir, d3phir, d2cr, d3cr, d2p, d2q, d2phirg, d3q) &
+ !$OMP             PRIVATE(pq, dpq, d2pq, d3pq, oz, dz, d2z, d3z) DEFAULT(NONE) &
+-!$OMP             SHARED(npoints,rho,eps_rho,grho,e_rho_rho_rho,e_rho_rho_ndrho,e_rho_ndrho_ndrho,e_ndrho_ndrho_ndrho)
++!$OMP             SHARED(npoints,rho,eps_rho,grho,e_rho_rho_rho,e_rho_rho_ndrho,e_rho_ndrho_ndrho,e_ndrho_ndrho_ndrho,rs)
+       DO ip = 1, npoints
+ 
+          IF (rho(ip) > eps_rho) THEN
+
+
+--- a/src/xc/xc_tfw.F	2025-02-19 16:13:55.511791230 +0100
++++ b/src/xc/xc_tfw.F	2025-02-19 16:15:32.188199411 +0100
+@@ -432,7 +432,7 @@
+       f = f23*f53*flda
+ 
+ !$OMP PARALLEL DO PRIVATE(ip) DEFAULT(NONE)&
+-!$OMP SHARED(npoints,rho,eps_rho,e_rho_rho,e_rho_ndrho,e_ndrho_ndrho,grho,f,fvw,r13)
++!$OMP SHARED(npoints,rho,eps_rho,e_rho_rho,e_rho_ndrho,e_ndrho_ndrho,grho,f,fvw,r13,s)
+       DO ip = 1, npoints
+ 
+          IF (rho(ip) > eps_rho) THEN
+@@ -472,7 +472,7 @@
+       f = -f13*f23*f53*flda
+ 
+ !$OMP PARALLEL DO PRIVATE(ip) DEFAULT(NONE)&
+-!$OMP SHARED(npoints,rho,eps_rho,e_rho_rho_rho,r13,s,e_rho_rho_ndrho,e_rho_ndrho_ndrho,f,fvw,s)
++!$OMP SHARED(npoints,rho,eps_rho,e_rho_rho_rho,r13,s,e_rho_rho_ndrho,e_rho_ndrho_ndrho,f,fvw,grho)
+       DO ip = 1, npoints
+ 
+          IF (rho(ip) > eps_rho) THEN
