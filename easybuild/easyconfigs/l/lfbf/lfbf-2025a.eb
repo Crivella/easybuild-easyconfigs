@@ -9,7 +9,7 @@ description = """GNU Compiler Collection (GCC) based compiler toolchain, includi
 
 toolchain = SYSTEM
 
-local_llvmver = '20.1.0-rc1'
+local_llvmver = '20.1.0'
 
 dependencies = [
     ('LLVM', local_llvmver),

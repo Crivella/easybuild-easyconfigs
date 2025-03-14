@@ -9,7 +9,7 @@ description = """GNU Compiler Collection (GCC) based compiler toolchain, includi
 
 toolchain = SYSTEM
 
-local_llvmver = '20.1.0-rc1'
+local_llvmver = '20.1.0'
 
 # toolchain used to build foss dependencies
 local_comp_mpi_tc = ('lompi', version)
