@@ -1,0 +1,44 @@
+easyblock = 'CMakeMake'
+
+name = 'SPIRV-LLVM-Translator'
+version = '20.1.0'
+
+homepage = 'https://github.com/KhronosGroup/SPIRV-LLVM-Translator'
+description = """This repository contains source code for the LLVM/SPIR-V Bi-Directional Translator, a library and tool for translation between LLVM IR and SPIR-V.
+This project currently only supports the OpenCL/compute "flavour" of SPIR-V: it consumes and produces SPIR-V modules that declare the Kernel capability."""
+
+toolchain = {'name': 'LLVMtc', 'version': version}
+toolchainopts = {'pic': True, 'openmp': True}
+
+
+source_urls = ['https://github.com/KhronosGroup/SPIRV-Tools/archive/refs/tags']
+sources = [
+    {
+        "filename": "v%(version)s.tar.gz",
+        "git_config": {
+            "url": "https://github.com/KhronosGroup",
+            "repo_name": "SPIRV-LLVM-Translator",
+            "tag": "v%s" % version,
+        },
+    },
+]
+checksums = ['c7a764168bf8a273fbbfc5cd3af18d3d4adbfbcf70b46c33d2e3ce6c6a8dcbff']
+
+builddependencies = [
+    ('CMake', '3.29.3'),
+]
+
+dependencies = []
+
+configopts = '-DLLVM_DIR=${EBROOTLLVM}/lib/cmake/llvm '
+
+sanity_check_paths = {
+    'files': [
+        'bin/llvm-spirv',
+        'include/LLVMSPIRVLib/LLVMSPIRVLib.h',
+        'lib/libLLVMSPIRVLib.a',
+    ],
+    'dirs': [],
+}
+
+moduleclass = 'tools'
