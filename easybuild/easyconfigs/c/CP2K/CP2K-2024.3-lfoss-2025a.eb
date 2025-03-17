@@ -2,7 +2,7 @@
 # Author:    Robert Mijakovic <robert.mijakovic@lxp.lu>
 ##
 name = 'CP2K'
-version = '2025.1'
+version = '2024.3'
 
 homepage = 'https://www.cp2k.org/'
 description = """CP2K is a freely available (GPL) program, written in Fortran 95, to perform atomistic and molecular
