@@ -1,0 +1,71 @@
+easyblock = 'CMakeMake'
+
+name = 'SPIRV-tools'
+version = '2024.3'
+
+homepage = 'https://github.com/KhronosGroup/SPIRV-Tools'
+description = """The SPIR-V Tools project provides an API and commands for processing SPIR-V modules.
+The project includes an assembler, binary module parser, disassembler, validator, and optimizer for SPIR-V.
+Except for the optimizer, all are based on a common static library.
+The library contains all of the implementation details, and is used in the standalone tools whilst also enabling integration into other code bases directly.
+The optimizer implementation resides in its own library, which depends on the core library."""
+
+toolchain = {'name': 'LLVMtc', 'version': '20.1.0'}
+toolchainopts = {'pic': True, 'openmp': True}
+
+local_vulkan_sdk_version = '1.4.309.0'
+
+source_urls = ['https://github.com/KhronosGroup/SPIRV-Tools/archive/refs/tags']
+sources = [
+    {
+        "filename": "v%(version)s.tar.gz",
+        "extract_cmd": "mkdir -p %(builddir)s/spirv-tools && tar xzvf %s --strip-components=1 -C $_",
+        "git_config": {
+            "url": "https://github.com/KhronosGroup",
+            "repo_name": "SPIRV-Tools",
+            "tag": "vulkan-sdk-%s" % local_vulkan_sdk_version,
+        },
+    },
+    {
+        "filename": "vulkan-sdk-%s.tar.gz" % local_vulkan_sdk_version,
+        "extract_cmd": "mkdir -p %(builddir)s/spirv-tools/external/spirv-headers && tar xzvf %s --strip-components=1 -C $_",
+        "source_urls": ["https://github.com/KhronosGroup/SPIRV-Headers/archive/refs/tags"],
+    },
+    # TODO: also add googletest to enable test suite
+]
+checksums = [
+    {'v2024.3.tar.gz': '88d068e5c0fc087056b1ab9e01c19761976031b3fecadcab5d2b55f9a5742093'},
+    {'vulkan-sdk-1.4.309.0.tar.gz': 'a96f8b4f2dfb18f7432e5c523e220ab0075372a9509e0c25fbff21c76af0de7c'},
+]
+
+builddependencies = [
+    ('CMake', '3.29.3'),
+    ('Python', '3.12.3'),
+]
+
+dependencies = []
+
+# configopts = '-DSPIRV_WERROR=OFF'
+
+sanity_check_paths = {
+    'files': [
+        'bin/spirv-as',
+        'bin/spirv-cfg',
+        'bin/spirv-dis',
+        'bin/spirv-lesspipe.sh',
+        'bin/spirv-link',
+        'bin/spirv-lint',
+        'bin/spirv-objdump',
+        'bin/spirv-opt',
+        'bin/spirv-reduce',
+        'bin/spirv-val',
+        'include/spirv-tools/libspirv.h',
+        'lib/libSPIRV-Tools.a',
+        'lib/libSPIRV-Tools-shared.so',
+    ],
+    'dirs': [
+        'lib/cmake/SPIRV-Tools'
+    ],
+}
+
+moduleclass = 'tools'
