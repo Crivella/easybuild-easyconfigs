@@ -1,0 +1,121 @@
+diff --git a/CMake/LastConfigureStep/CMakeLists.txt b/CMake/LastConfigureStep/CMakeLists.txt
+index 072b9fb247..8e790d7312 100644
+--- a/CMake/LastConfigureStep/CMakeLists.txt
++++ b/CMake/LastConfigureStep/CMakeLists.txt
+@@ -38,7 +38,7 @@ export(TARGETS ${Slicer_TARGETS} APPEND FILE ${Slicer_BINARY_DIR}/SlicerTargets.
+ include(${Slicer_SOURCE_DIR}/CMake/SlicerGenerateSlicerConfig.cmake)
+ 
+ #-----------------------------------------------------------------------------
+-include(SlicerPackageAndUploadTarget)
++# include(SlicerPackageAndUploadTarget)
+ 
+ #-----------------------------------------------------------------------------
+-include(${Slicer_SOURCE_DIR}/CMake/SlicerCPack.cmake)
++# include(${Slicer_SOURCE_DIR}/CMake/SlicerCPack.cmake)
+diff --git a/SuperBuild/External_CTK.cmake b/SuperBuild/External_CTK.cmake
+index 36c6f563b8..052f42400a 100644
+--- a/SuperBuild/External_CTK.cmake
++++ b/SuperBuild/External_CTK.cmake
+@@ -14,7 +14,8 @@ endif()
+ ExternalProject_Include_Dependencies(${proj} PROJECT_VAR proj DEPENDS_VAR ${proj}_DEPENDENCIES)
+ 
+ if(Slicer_USE_SYSTEM_${proj})
+-  message(FATAL_ERROR "Enabling Slicer_USE_SYSTEM_${proj} is not supported !")
++  set(CTK_DIR $ENV{EBROOTCTK}/lib/cmake/ctk)
++  find_package(CTK 0.1.0 REQUIRED NO_MODULE)
+ endif()
+ 
+ # Sanity checks
+diff --git a/SuperBuild/External_JsonCpp.cmake b/SuperBuild/External_JsonCpp.cmake
+index 3d784e0052..d4d7f1e734 100644
+--- a/SuperBuild/External_JsonCpp.cmake
++++ b/SuperBuild/External_JsonCpp.cmake
+@@ -9,7 +9,9 @@ ExternalProject_Include_Dependencies(${proj} PROJECT_VAR proj DEPENDS_VAR ${proj
+ 
+ # Sanity checks
+ if(Slicer_USE_SYSTEM_${proj})
+-  message(FATAL_ERROR "Enabling Slicer_USE_SYSTEM_${proj} is not supported !")
++  set(${proj}_DIR $ENV{EBROOTJSONCPP})
++  set(${proj}_INCLUDE_DIR $$ENV{EBROOTJSONCPP}/include)
++  set(${proj}_LIBRARY $ENV{EBROOTJSONCPP}/lib/libjsoncpp.a)
+ endif()
+ if(DEFINED ${proj}_DIR AND NOT EXISTS ${${proj}_DIR})
+   message(FATAL_ERROR "${proj}_DIR variable is defined but corresponds to nonexistent directory")
+diff --git a/SuperBuild/External_RapidJSON.cmake b/SuperBuild/External_RapidJSON.cmake
+index e3b46fcf27..b99df8694b 100644
+--- a/SuperBuild/External_RapidJSON.cmake
++++ b/SuperBuild/External_RapidJSON.cmake
+@@ -8,8 +8,7 @@ set(${proj}_DEPENDENCIES "")
+ ExternalProject_Include_Dependencies(${proj} PROJECT_VAR proj DEPENDS_VAR ${proj}_DEPENDENCIES)
+ 
+ if(Slicer_USE_SYSTEM_${proj})
+-  unset(${proj}_DIR CACHE)
+-  find_package(${proj} REQUIRED)
++  set(${proj}_DIR $ENV{EBROOTRAPIDJSON}/lib/cmake/RapidJSON)
+ endif()
+ 
+ # Sanity checks
+diff --git a/SuperBuild/External_SimpleITK.cmake b/SuperBuild/External_SimpleITK.cmake
+index 7ba438f4ef..ba6c49e492 100644
+--- a/SuperBuild/External_SimpleITK.cmake
++++ b/SuperBuild/External_SimpleITK.cmake
+@@ -2,19 +2,16 @@
+ set(proj SimpleITK)
+ 
+ # Set dependency list
+-set(${proj}_DEPENDENCIES
+-  ITK
+-  python
+-  python-pip
+-  python-setuptools
+-  Swig
+-  )
++set(${proj}_DEPENDENCIES "")
+ 
+ # Include dependent projects if any
+ ExternalProject_Include_Dependencies(${proj} PROJECT_VAR proj DEPENDS_VAR ${proj}_DEPENDENCIES)
+ 
+ if(Slicer_USE_SYSTEM_${proj})
+-  message(FATAL_ERROR "Enabling Slicer_USE_SYSTEM_${proj} is not supported !")
++  string(REPLACE "." ";" VERSION_LIST $ENV{EBVERSIONSIMPLEITK})
++  list(GET VERSION_LIST 0 SITK_VMaj)
++  list(GET VERSION_LIST 1 SITK_VMin)
++  set(${proj}_DIR $ENV{EBROOTSIMPLEITK}/lib/cmake/SimpleITK-${SITK_VMaj}.${SITK_VMin})
+ endif()
+ 
+ # Sanity checks
+@@ -244,6 +241,11 @@ ExternalProject_Execute(${proj} \"install\" \"${PYTHON_EXECUTABLE}\" \"-m\" \"pi
+     )
+ 
+ else()
++  message(STATUS "Skipping ${proj} SuperBuild configuration")
++  message(STATUS "Skipping ${proj} SuperBuild configuration")
++  message(STATUS "Skipping ${proj} SuperBuild configuration")
++  message(STATUS "Skipping ${proj} SuperBuild configuration")
++
+   ExternalProject_Add_Empty(${proj} DEPENDS ${${proj}_DEPENDENCIES})
+ endif()
+ 
+diff --git a/SuperBuild/External_python.cmake b/SuperBuild/External_python.cmake
+index 96800d6259..aa3bfadf9c 100644
+--- a/SuperBuild/External_python.cmake
++++ b/SuperBuild/External_python.cmake
+@@ -35,14 +35,10 @@ set(PYTHON_SITE_PACKAGES_SUBDIR ${PYTHON_STDLIB_SUBDIR}/site-packages)
+ ExternalProject_Include_Dependencies(${proj} PROJECT_VAR proj DEPENDS_VAR ${proj}_DEPENDENCIES)
+ 
+ if(Slicer_USE_SYSTEM_${proj})
+-  unset(PYTHON_INCLUDE_DIR CACHE)
+-  unset(PYTHON_LIBRARY CACHE)
+-  unset(PYTHON_EXECUTABLE CACHE)
+-  find_package(PythonLibs ${Slicer_REQUIRED_PYTHON_VERSION_DOT} REQUIRED)
+-  find_package(PythonInterp ${Slicer_REQUIRED_PYTHON_VERSION_DOT} REQUIRED)
+-  set(PYTHON_INCLUDE_DIR ${PYTHON_INCLUDE_DIRS})
+-  set(PYTHON_LIBRARY ${PYTHON_LIBRARIES})
+-  set(PYTHON_EXECUTABLE ${PYTHON_EXECUTABLE})
++  find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
++  set(PYTHON_INCLUDE_DIR ${Python3_INCLUDE_DIRS})
++  set(PYTHON_LIBRARY ${Python3_LIBRARIES})
++  set(PYTHON_EXECUTABLE ${Python3_EXECUTABLE})
+ endif()
+ 
+ if((NOT DEFINED PYTHON_INCLUDE_DIR

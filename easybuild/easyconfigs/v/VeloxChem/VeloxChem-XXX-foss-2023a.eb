@@ -1,0 +1,65 @@
+easyblock = 'PythonBundle'
+
+name = 'VeloxChem'
+version = '2024.03.3'
+
+homepage = 'https://github.com/VeloxChem/VeloxChem'
+description = """VeloxChem [RLV+20] is a Python-based open source quantum chemistry software for
+contemporary and future hardware architectures. It features interactive program access through
+Jupyter notebooks as well as massively parallel calculations in high-performance
+computing (HPC) environments."""
+
+toolchain = {'name': 'foss', 'version': '2023a'}
+
+source_urls = ['https://github.com/VeloxChem/VeloxChem/archive/']
+sources = [
+    {
+        'filename': f'CTK-{_ctk_commit[:8]}.tar.xz',
+        'git_config': {
+            'url': 'https://github.com/commontk',
+            'repo_name': '%(name)s',
+            'commit': _ctk_commit,
+            'recursive': True,
+        },
+    },
+]
+
+builddependencies = [
+    ('CMake', '3.26.3'),
+]
+dependencies = [
+    ('Python', '3.11.3'),
+    ('Scipy-bundle', '2023.07'),
+    ('mpi4py', '3.1.4'),
+    ('pybind11', '2.12.0'),
+    ('scikit-build', '0.17.6'),
+
+    ('Eigen', '3.4.0'),
+    ('libxc', '6.2.2'),
+]
+
+
+_vlx_commit = ""
+exts_list = [
+    (name, version, {
+        'modulename': 'veloxchem',
+        'sources': [
+            {
+                'filename': f'VeloxChem-{_vlx_commit[:8]}.tar.xz',
+                'git_config': {
+                    'url': 'https://github.com/%(name)s',
+                    'repo_name': '%(name)s',
+                    'commit': _vlx_commit,
+                    'recursive': True,
+                },
+            },
+        ],
+    }),
+]
+
+sanity_check_paths = {
+    'files': [],
+    'dirs': ['include/'],
+}
+
+moduleclass = 'chem'

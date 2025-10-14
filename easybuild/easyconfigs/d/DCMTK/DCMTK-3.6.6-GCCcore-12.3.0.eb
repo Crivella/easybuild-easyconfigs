@@ -1,0 +1,59 @@
+easyblock = 'CMakeMake'
+
+name = 'DCMTK'
+version = '3.6.6'
+
+homepage = 'https://dicom.offis.de/dcmtk'
+description = """DCMTK is a collection of libraries and applications implementing large parts the DICOM standard.
+It includes software for examining, constructing and converting DICOM image files, handling offline media, sending
+and receiving images over a network connection, as well as demonstrative image storage and worklist servers."""
+
+toolchain = {'name': 'GCCcore', 'version': '12.3.0'}
+toolchainopts = {'pic': True}
+
+source_urls = ['https://dicom.offis.de/download/dcmtk/dcmtk%s/' % version.replace('.', '')]
+sources = ['%(namelower)s-%(version)s.tar.gz']
+checksums = ['6859c62b290ee55677093cccfd6029c04186d91cf99c7642ae43627387f3458e']
+
+builddependencies = [
+    ('binutils', '2.40'),
+    ('CMake', '3.31.8'),
+]
+
+dependencies = [
+    ('OpenSSL', '1.1', '', SYSTEM),
+    ('zlib', '1.2.13'),
+    ('libjpeg-turbo', '2.1.5.1'),
+    ('LibTIFF', '4.5.0'),
+    ('libpng', '1.6.39'),
+    ('libxml2', '2.11.4'),
+    ('libiconv', '1.17'),
+]
+
+configopts = [
+    '-DBUILD_SHARED_LIBS=OFF',
+    '-DBUILD_SHARED_LIBS=ON'
+]
+
+runtest = True
+
+_bins = ['dcmdump', 'dcmj2pnm']
+_dcm_libs = [f'libdcm{x}' for x in [
+    'data', 'pmap', 'xml', 'dsig', 'pstat', 'ect', 'qrdb', 'fg', 'rt', 'image',
+    'seg', 'imgle', 'sr', 'iod', 'jpeg', 'jpls', 'tract', 'net', 'wlm', 'tls',
+]]
+
+_files = [f'bin/{bin}' for bin in _bins]
+_files += [f'lib/{lib}.a' for lib in _dcm_libs]
+_files += [f'lib/{lib}.{SHLIB_EXT}' for lib in _dcm_libs]
+
+sanity_check_paths = {
+    'files': _files,
+    'dirs': ['include/dcmtk'],
+}
+
+sanity_check_commands = [
+    f'{bin} --version | grep {version}' for bin in _bins
+]
+
+moduleclass = 'data'

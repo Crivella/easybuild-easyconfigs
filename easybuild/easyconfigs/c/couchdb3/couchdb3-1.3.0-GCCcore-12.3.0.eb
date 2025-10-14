@@ -1,0 +1,25 @@
+easyblock = 'PythonBundle'
+
+name = 'couchdb3'
+version = '1.3.0'
+
+homepage = 'https://github.com/N-Vlahovic/couchdb3'
+description = "CouchDB3 is a wrapper around the CouchDB API."
+
+toolchain = {'name': 'GCCcore', 'version': '12.3.0'}
+
+builddependencies = [
+    ('poetry', '1.5.1'),
+]
+dependencies = [
+    ('Python', '3.11.3'),
+    ('Python-bundle-PyPI', '2023.06'),  # requests
+]
+
+exts_list = [
+    (name, version, {
+        'checksums': ['45794332d16f531d5c9f9197848905020bea2aff6fd1c447a571e89f18d098d1'],
+    }),
+]
+
+moduleclass = 'tools'

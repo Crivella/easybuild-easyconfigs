@@ -1,0 +1,21 @@
+easyblock = 'PythonBundle'
+
+name = 'CouchDB'
+version = '1.2'
+
+homepage = 'https://github.com/djc/couchdb-python/'
+description = "A Python library for working with CouchDB."
+
+toolchain = {'name': 'GCCcore', 'version': '12.3.0'}
+
+dependencies = [
+    ('Python', '3.11.3'),
+]
+
+exts_list = [
+    (name, version, {
+        'checksums': ['1386a1a43f25bed3667e3b805222054940d674fa1967fa48e9d2012a18630ab7'],
+    }),
+]
+
+moduleclass = 'tools'
