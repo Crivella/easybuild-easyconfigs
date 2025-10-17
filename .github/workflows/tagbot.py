@@ -88,6 +88,7 @@ for new_file in new_ecs:
         new_software += 1
 
 manual_download = False
+print("Checking for manual download instructions")
 for file in new_ecs + changed_ecs:
     with file.open() as f:
         content = f.read()
