@@ -13,6 +13,7 @@ checksums = ['4e4499d93b4909b750ee2a6444af107cd5c1c62e75020c3e1625e946c6693573']
 download_instructions = f'Download {sources[0]} from mathworks.com'
 
 java_options = '-Xmx2048m'
+abc = 123
 
 osdependencies = [('p7zip-plugins', 'p7zip-full')]  # for extracting iso-files
 dependencies = [('MathWorksServiceHost', '2024.13.0.2')]
