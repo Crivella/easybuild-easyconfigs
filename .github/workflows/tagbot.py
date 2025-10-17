@@ -90,7 +90,7 @@ for new_file in new_ecs:
 manual_download = False
 for file in new_ecs + changed_ecs:
     with file.open() as f:
-        if 'manual_download' in f.read():
+        if 'download_instructions' in f.read():
             manual_download = True
             break
 
