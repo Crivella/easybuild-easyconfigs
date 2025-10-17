@@ -90,9 +90,14 @@ for new_file in new_ecs:
 manual_download = False
 for file in new_ecs + changed_ecs:
     with file.open() as f:
-        if 'download_instructions' in f.read():
-            manual_download = True
-            break
+        content = f.read()
+    print(f"-"*90)
+    print(f"Checking {file} for manual download instructions")
+    print(content)
+    print(f"-"*90)
+    if 'download_instructions' in content:
+        manual_download = True
+        break
 
 print(f"Generating comment for {len(to_diff)} updates softwares")
 # Limit comment size for large PRs:
