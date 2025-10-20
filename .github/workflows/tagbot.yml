@@ -23,7 +23,7 @@ jobs:
         ref: "${{ github.event.pull_request.head.sha }}"
         path: 'pr'
         fetch-depth: 0
-        
+
     - name: Attempt test merge
       id: merge
       run: |
@@ -50,5 +50,4 @@ jobs:
     - name: Tag and comment
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: python .github/workflows/tagbot.py
-
+      run: python pr/.github/workflows/tagbot.py
