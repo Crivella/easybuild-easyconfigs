@@ -14,8 +14,8 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-    # - name: Checkout base branch for workflow scripts
-    #   uses: actions/checkout@v4
+    - name: Checkout base branch for workflow scripts
+      uses: actions/checkout@v4
 
     - name: Checkout PR for computing diff into "pr" subdirectory
       uses: actions/checkout@v4
@@ -24,20 +24,20 @@ jobs:
         path: 'pr'
         fetch-depth: 0
 
-    # - name: Attempt test merge
-    #   id: merge
-    #   run: |
-    #     git config user.name "github-workflow"
-    #     git config user.email "github-workflow@github.com"
-    #     git merge --no-edit --no-ff origin/${{ github.event.pull_request.base.ref }}
-    #   continue-on-error: true
-    #   working-directory: pr
+    - name: Attempt test merge
+      id: merge
+      run: |
+        git config user.name "github-workflow"
+        git config user.email "github-workflow@github.com"
+        git merge --no-edit --no-ff origin/${{ github.event.pull_request.base.ref }}
+      continue-on-error: true
+      working-directory: pr
 
-    # - name: Abort if merge failed
-    #   if: steps.merge.outcome == 'failure'
-    #   run: |
-    #     echo "Merge conflict detected, failing job."
-    #     exit 1
+    - name: Abort if merge failed
+      if: steps.merge.outcome == 'failure'
+      run: |
+        echo "Merge conflict detected, failing job."
+        exit 1
 
     - name: set up Python
       uses: actions/setup-python@v5
@@ -51,4 +51,3 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: python .github/workflows/tagbot.py
-      working-directory: pr
