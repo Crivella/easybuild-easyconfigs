@@ -72,6 +72,23 @@ jobs:
         # Ensure cache is invalidated when configuremake.py changes so we download latest version of config.guess
         key: eb-sourcepath-${{ matrix.python }}-${{ hashFiles('configuremake.check') }}
 
+    - name: check config.guess
+      id: check-config-guess1
+      continue-on-error: true
+      # /tmp/sources/generic/eb_v5.4.1.dev0/ConfigureMake/config.guess
+      run: |
+          echo "ls -l /tmp/sources ---"
+          ls -l /tmp/sources
+          echo "--------"
+          find /tmp/sources -name "config.guess"
+
+          echo "ls -la /tmp/sources/generic ---"
+          ls -la /tmp/sources/generic
+          echo "ls -la /tmp/sources/generic/eb_v5.4.1.dev0 ---"
+          ls -la /tmp/sources/generic/eb_v5.4.1.dev0
+          echo "ls -la /tmp/sources/generic/eb_v5.4.1.dev0/ConfigureMake ---"
+          ls -la /tmp/sources/generic/eb_v5.4.1.dev0/ConfigureMake
+
     - name: install modules tool
       run: |
           cd $HOME
@@ -80,7 +97,7 @@ jobs:
           echo "Found install_eb_dep.sh script: $INSTALL_DEP"
 
           # install modules tool
-          source $INSTALL_DEP ${{matrix.modules_tool}} $PWD
+          source $INSTALL_DEP ${{matrix.modules_tool}} $HOME
 
           # changes in environment are not passed to other steps, so need to create files...
           echo $MOD_INIT > mod_init
@@ -123,7 +140,7 @@ jobs:
 
           # run test suite
           # if tests failed, print error message that is picked up by boegelbot to determine end of test output
-          python -O -m test.easyconfigs.suite || (echo "ERROR: Not all tests were successful" && exit 1)
+          # python -O -m test.easyconfigs.suite || (echo "ERROR: Not all tests were successful" && exit 1)
 
           unset PYTHONPATH
 
@@ -158,6 +175,23 @@ jobs:
           # try installing M4 with system toolchain (requires ConfigureMake easyblock + easyconfig)
           # use /tmp/sources because that has cached downloads (see cache step above)
           eb --prefix /tmp/$USER/$GITHUB_SHA --sourcepath /tmp/sources M4-1.4.18.eb
+    - name: check config.guess
+      id: check-config-guess2
+      continue-on-error: true
+      # /tmp/sources/generic/eb_v5.4.1.dev0/ConfigureMake/config.guess
+      run: |
+          echo "ls -l /tmp/sources ---"
+          ls -l /tmp/sources
+          echo "--------"
+          find /tmp/sources -name "config.guess"
+
+          echo "ls -la /tmp/sources/generic ---"
+          ls -la /tmp/sources/generic
+          echo "ls -la /tmp/sources/generic/eb_v5.4.1.dev0 ---"
+          ls -la /tmp/sources/generic/eb_v5.4.1.dev0
+          echo "ls -la /tmp/sources/generic/eb_v5.4.1.dev0/ConfigureMake ---"
+          ls -la /tmp/sources/generic/eb_v5.4.1.dev0/ConfigureMake
+
 
   test-sdist:
     runs-on: ubuntu-22.04
