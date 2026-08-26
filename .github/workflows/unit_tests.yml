@@ -47,7 +47,6 @@ jobs:
 
     - name: install EasyBuild framework
       run: |
-          # cd $HOME
           # first determine which branch of easybuild-framework repo to install
           BRANCH=develop
           if [ "x$GITHUB_BASE_REF" = 'xmain' ]; then BRANCH=main; fi
@@ -62,21 +61,6 @@ jobs:
           cd easybuild-easyblocks; git log -n 1; cd -
           pip install $PWD/easybuild-easyblocks
 
-    # Run bash find to find the actual path of configuremake.py either in PWD or HOME
-    # - name: Find configuremake.py
-    #   id: find-configuremake
-    #   run: |
-    #       echo "PWD: $PWD"
-    #       echo "HOME: $HOME"
-    #       ls
-    #       ls $HOME
-    #       CONFIGUREMAKE_PATH=$(find $PWD -name configuremake.py)
-    #       if [ -z "$CONFIGUREMAKE_PATH" ]; then
-    #         CONFIGUREMAKE_PATH=$(find $HOME -name configuremake.py)
-    #       fi
-    #       echo "Found configuremake.py at $CONFIGUREMAKE_PATH"
-    #       echo "configuremake_path=$CONFIGUREMAKE_PATH" >> $GITHUB_OUTPUT
-
     - name: Restore cache of source files in /tmp/sources
       id: restore-cache-sources
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # 6.1.0
@@ -87,7 +71,6 @@ jobs:
 
     - name: install modules tool
       run: |
-          # cd $HOME
           # use install_eb_dep.sh script provided with easybuild-framework
           export INSTALL_DEP=$(which install_eb_dep.sh)
           echo "Found install_eb_dep.sh script: $INSTALL_DEP"
@@ -99,19 +82,6 @@ jobs:
           echo $MOD_INIT > mod_init
           echo $PATH > path
           if [ ! -z $MODULESHOME ]; then echo $MODULESHOME > moduleshome; fi
-
-    - name: checks
-      id: checks
-      run: |
-          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
-          echo "PWD: $PWD"
-          echo "PYTHONPATH: $PYTHONPATH"
-          echo "ls -l $PWD -----"
-          ls -l $PWD
-          echo "------"
-          echo "ls -l $HOME -----"
-          ls -l $HOME
-          echo "------"
 
     - name: run test suite
       env:
@@ -149,7 +119,7 @@ jobs:
 
           # run test suite
           # if tests failed, print error message that is picked up by boegelbot to determine end of test output
-          # python -O -m test.easyconfigs.suite || (echo "ERROR: Not all tests were successful" && exit 1)
+          python -O -m test.easyconfigs.suite || (echo "ERROR: Not all tests were successful" && exit 1)
 
           unset PYTHONPATH
 
